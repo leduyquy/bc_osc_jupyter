@@ -1,0 +1,65 @@
+---
+cluster:
+  - "bt-hpc"
+form:
+  - auto_accounts
+  - mode
+  - bc_num_hours
+  - node_type
+  - gpus
+  - num_cores
+  - memory
+  - jupyter_version
+# - bc_email_on_started
+attributes:
+  jupyter_version:
+    widget: 'select'
+    options:
+      - [ '4.1.5', '4.1.5' ]
+  mode:
+    widget: "radio"
+    value: "1"
+    options:
+      - ["Jupyter Lab", "1"]
+      - ["Jupyter Notebook", "0"]
+  num_cores:
+    widget: "number_field"
+    label: "Number of cores"
+    value: 1
+    help: |
+      Number of cores for job submission. Minimums and maximums will change
+      depending on the choice of node type.
+    min: 1
+    max: 28
+    step: 1
+
+  memory:
+    widget: "number_field"
+    label: "Total Memory (GB)"
+    help: |
+      Total memory for job submission. Minimums and maximums will change
+      depending on the choice of node type.
+    min: 1
+    max: 1024
+    value: 32
+
+  node_type:
+    widget: select
+    label: "Node type"
+    options:
+      - [
+          "any",     "any",
+          data-min-num-cores: 1,
+          data-max-num-cores: 1
+        ]
+
+  gpu_type:
+    label: GPU Type
+    widget: select
+    options:
+      - [L40, L40]
+
+  gpus:
+    widget: number_field
+    min: 1
+    max: 4

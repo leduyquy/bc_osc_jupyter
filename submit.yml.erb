@@ -1,0 +1,39 @@
+<%-
+  base_slurm_args = ["--nodes", "1", "--ntasks-per-node", "#{num_cores.to_i}", "--mem", "#{memory.to_i}G"]
+
+  slurm_args = case node_type
+              when "gpu-40core"
+                base_slurm_args + ["--constraint", "40core"]
+              else
+                base_slurm_args
+              end
+
+  if gpu_type && gpu_type != "" && gpus.to_i > 0
+    slurm_args = slurm_args + ["--gres=gpu:#{gpu_type}:#{gpus}"]
+  end
+-%>
+
+<% if num_cores.to_i < 1 or num_cores.to_i > 128 -%>
+  <% raise "Invalid number of cores: must be between 1 and 128." %>
+<% end -%>
+<% if memory.to_i < 1 or memory.to_i > 1024 -%>
+  <% raise "Invalid memory: must be between 1 and 1024 GB." %>
+<% end -%>
+<% if !defined?(gpus) || gpus.to_i < 0 or gpus.to_i > 4 -%>
+  <% raise "Invalid number of GPUs: must be between 0 and 4." %>
+<% end -%>
+
+<% if cluster =~ /bt-hpc/ -%>
+---
+batch_connect:
+  template: "basic"
+  conn_params:
+    - jupyter_api
+script:
+<% if node_type =~ /gpu/ && gpus.to_i.positive? -%>
+  gpus_per_node: <%= gpus %>
+<% end -%>
+  native:
+<% slurm_args.each do |arg| -%>
+    - "<%= arg %>"
+<% end -%>
